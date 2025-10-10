@@ -2,7 +2,7 @@
   "name": "backend_company_portal",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
@@ -18,7 +18,8 @@
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "mongoose": "^8.19.1"
+    "mongoose": "^8.19.1",
+    "nodemon": "^3.1.10"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

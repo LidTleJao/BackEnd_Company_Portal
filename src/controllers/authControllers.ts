@@ -1,4 +1,3 @@
-const express = require("express");
 const { getAdminToken, createUserOnKeycloak } = require("../config/keycloak");
 const { userModel } = require("../models/userModel");
 const { encrypt } = require("../utils/encrypt");
@@ -8,7 +7,7 @@ async function registerUser(req: any, res: any) {
     const { firstName, lastName, email, phone, nationalId } = req.body;
     const token = await getAdminToken();
 
-    // 1️⃣ สร้างผู้ใช้ใน Keycloak
+    //สร้างผู้ใช้ใน Keycloak
     await createUserOnKeycloak(token, {
       firstName,
       lastName,
@@ -19,7 +18,7 @@ async function registerUser(req: any, res: any) {
       attributes: { phone },
     });
 
-    // 2️⃣ เก็บข้อมูลเสริมใน MongoDB
+    // เก็บข้อมูลเสริมใน MongoDB
     const encrypted = encrypt(nationalId);
     const last4 = nationalId.slice(-4);
 
