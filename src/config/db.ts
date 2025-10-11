@@ -1,16 +1,22 @@
-const mongoose = require("mongoose");
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import path from "path";
 
-async function connectDB(url: string) {
-    try {
-        await mongoose.connect(url);
-        console.log("Connected to MongoDB");
-    } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        process.exit(1);
-    }
-    
-}
+dotenv.config();
 
-module.exports = {
-    connectDB,
-};
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const AppDataSource = new DataSource({
+  type: "postgres",
+  host: process.env.DB_HOST ?? "localhost",
+  port: Number(process.env.DB_PORT ?? 5433),
+  username: process.env.DB_USER ?? "keycloak",
+  password: process.env.DB_PASSWORD ?? process.env.DB_PASS ?? "keycloak",
+  database: process.env.DB_NAME ?? "company_portal",
+  synchronize: true,
+  logging: false,
+  entities: [path.join(__dirname, "../entities/*.{ts,js}")],
+});

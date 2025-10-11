@@ -1,45 +1,28 @@
-const { getAdminToken, createUserOnKeycloak } = require("../config/keycloak");
-const { userModel } = require("../models/userModel");
-const { encrypt } = require("../utils/encrypt");
+import type { Request, Response } from "express";
+import { AppDataSource } from "../config/db.js";
+import { User } from "../entities/User.js";
+import { getAdminToken, createUserOnKeycloak } from "../config/keycloak.js";
 
-async function registerUser(req: any, res: any) {
+export async function registerUser(req: Request, res: Response) {
   try {
-    const { firstName, lastName, email, phone, nationalId } = req.body;
+    const { email, phone, nationalId } = req.body;
     const token = await getAdminToken();
 
-    //สร้างผู้ใช้ใน Keycloak
     await createUserOnKeycloak(token, {
-      firstName,
-      lastName,
-      email,
       username: email,
+      email,
       enabled: true,
       emailVerified: false,
       attributes: { phone },
     });
 
-    // เก็บข้อมูลเสริมใน MongoDB
-    const encrypted = encrypt(nationalId);
-    const last4 = nationalId.slice(-4);
+    const userRepo = AppDataSource.getRepository(User);
+    const newUser = userRepo.create({ email, phone, nationalId });
+    await userRepo.save(newUser);
 
-    const user = new userModel({
-      keycloakId: email,
-      firstName,
-      lastName,
-      email,
-      phone,
-      nationalIdEncrypted: encrypted,
-      nationalIdLast4: last4,
-    });
-
-    await user.save();
-    return res.status(201).json({ ok: true, message: "User registered successfully" });
+    res.status(201).json({ ok: true, message: "User registered successfully" });
   } catch (err: any) {
     console.error(err);
-    return res.status(500).json({ ok: false, message: err.message });
+    res.status(500).json({ ok: false, message: err.message });
   }
 }
-
-module.exports = {
-  registerUser,
-};

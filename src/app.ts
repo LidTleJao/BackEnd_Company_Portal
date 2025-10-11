@@ -1,7 +1,7 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const authRoutes = require("./routes/authRoutes");
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -12,5 +12,6 @@ app.use(
   })
 );
 app.use("/v1", authRoutes);
+app.get("/health", (_req, res) => res.json({ ok: true }));
 
-module.exports = app;
+export default app;
