@@ -22,12 +22,12 @@ export class User {
   })
   phone!: string;
 
-  @Column({
-    type: "varchar",
-    length: 20,
-    nullable: true,
-  })
-  nationalId!: string;
+  // @Column({
+  //   type: "varchar",
+  //   length: 20,
+  //   nullable: true,
+  // })
+  // nationalId!: string;
 
   @CreateDateColumn({ type: "timestamptz" })
   createdAt!: Date;
