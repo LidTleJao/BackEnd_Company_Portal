@@ -1,16 +1,20 @@
-const dotenv = require("dotenv");
-const app = require("./app");
-const { connectDB } = require("./config/db");
+import "reflect-metadata";
+import dotenv from "dotenv";
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+import app from "./app.js";
+import { AppDataSource } from "./config/db.js";
 
-console.log('MONGO_URL =', process.env.MONGO_URL);
+const PORT = Number(process.env.PORT ?? 4000);
+console.log("Decorators:", { exp: true, emit: true });
 
-connectDB(process.env.MONGO_URL!)
+AppDataSource.initialize()
   .then(() => {
+    console.log("✅ PostgreSQL connected (TypeORM DataSource initialized).");
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`🚀 Server is running on port ${PORT}`);
     });
   })
-  .catch((err: any) => console.error(err));
+  .catch((err) => {
+    console.error("❌ Error during Data Source initialization:", err);
+  });
