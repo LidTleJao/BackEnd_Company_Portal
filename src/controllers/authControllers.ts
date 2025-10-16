@@ -45,16 +45,27 @@ export async function loginUser(req: any, res: any) {
 
     const params = new URLSearchParams();
     params.append("client_id", process.env.KEYCLOAK_CLIENT_ID!);
-    params.append("client_secret", process.env.KEYCLOAK_CLIENT_SECRET!);
+    // params.append("client_secret", process.env.KEYCLOAK_CLIENT_SECRET!);
+    if (process.env.KEYCLOAK_CLIENT_SECRET?.trim()) {
+      params.append("client_secret", process.env.KEYCLOAK_CLIENT_SECRET);
+    }
     params.append("grant_type", "password");
+
     params.append("username", email);
     params.append("password", password);
 
-    const { data } = await axios.post(tokenUrl, params);
+    const { data } = await axios.post(tokenUrl, params.toString(),{
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
     // data = { access_token, refresh_token, expires_in, ... }
     res.status(200).json({ ok: true, ...data });
   } catch (err: any) {
-    console.error(err.response?.data || err.message);
-    res.status(401).json({ ok: false, message: "Invalid credentials" });
+    console.error("KC login error:", err.response?.data || err.message);
+    // ส่งข้อความดิบกลับมาด้วย จะได้ไล่สาเหตุได้ทันที
+    return res.status(401).json({
+      ok: false,
+      message: "Invalid credentials",
+      detail: err.response?.data || err.message,
+    });
   }
 }
